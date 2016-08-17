@@ -1,61 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+                  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+        <script src="/javascripts/countup.js"></script>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+<!--     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!--     // <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
   </head>
+    <body data-spy="scroll" data-target=".navbar" data-offset="50"> 
   <body>
+  <div id="section5" class="container-fluid">
     <h2>Immediate Steps:</h2>
     <ol>
       <li>Go to a safe place and remove yourself from any immediate danger.</li>
       <li>Contact someone that you trust for emotional support.</li>
       <li>Report it by calling 911, notifying your local police department or visiting a medical center immediately.</li>
         <ul>
-        	<li>Under the Violence Against Women Act, you are entitled to a free sexual assault forensic exam, which should be performed within 72 hours of the assault. Whether you decide to immediately report the case or not, the evidence collected through this exam will be stored for 6 months.</li>
+        <li>Under the Violence Against Women Act, you are entitled to a free sexual assault forensic exam, which should be performed within 72 hours of the assault. Whether you decide to immediately report the case or not, the evidence collected through this exam will be stored for 6 months.</li>
         </ul>
       <li>Preserve all physical evidence.</li>
       	<ul>
         	<li>Avoid showering, using the restroom, combing your hair, and changing your clothes.</li>
         </ul>
     </ol>
+  </div>
+<!--   <div id="section1" class="container-fluid"> -->
+    <div id="map"></div>
+    <script>
+      // Note: This example requires that you consent to location sharing when
+      // prompted by your browser. If you see the error "The Geolocation service
+      // failed.", it means you probably did not give permission for the browser to
+      // locate you.
+      var service;
+      var map;
+      var pos;
+      var loc;
+      var infoWindow;
+      var cityCircle;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 40.7128, lng: 74.0059},
+          zoom: 13,
+        });
+        infoWindow = new google.maps.InfoWindow({map: map});
+        service = new google.maps.places.PlacesService(map);
+
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            //insert ajax code here
+            //create new XMLHTTPRequest object
+            //req.open (verb, url, true)
+            //req.setheader...
+            //req.send("pos="+pos)
+
+            drawCircle();
+
+            // var url = "http://localhost:3000/map";
+            // var req = new XMLHttpRequest();
+            // req.open ('POST', url, true);
+            // req.setRequestHeader ("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+            // req.send ("lat="+pos.lat+'&'+"lng="+pos.lng)
+            
+            infoWindow.setPosition(pos);
+            infoWindow.setContent("You're here");
+            map.setCenter(pos);
+            map.addListener('idle', performSearch1);
+            map.addListener('idle', performSearch2);
+
+          }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+          });//try 3000 or 30000
+
+
+
+         
+        } 
+        else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+
+      }
+
+      function drawCircle(){
+        //try the null thing here okay Kasey????? okay.
+        cityCircle = new google.maps.Circle({
+              strokeColor: '#FFF',
+              strokeOpacity: 0.5,
+              strokeWeight: 2,
+              fillColor: '#FFF',
+              fillOpacity: 0.5,
+              map: map,
+              center: pos,
+              radius: 16093,
+            });
+        
+      }
+
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+      }
+
+      function performSearch1() {
+        var request = {
+          bounds: map.getBounds(),
+          keyword: 'police',
+        };
+        service.radarSearch(request, callback);
+      }
+      function performSearch2() {
+        var request = {
+          bounds: map.getBounds(),
+          keyword: 'hospital',
+        };
+        service.radarSearch(request, callback);
+      }
+
+      function callback(results, status) {
+        if (status !== google.maps.places.PlacesServiceStatus.OK) {
+          console.error(status);
+          return;
+        }
+
+        var marker = new google.maps.Marker({
+          position: pos,
+          map: map,
+          title: 'You are here'
+          //icon: 'yellow_marker2.png'
+        });
+
+
+        marker.setMap(map);
+
+
+        for (var i = 0, result; result = results[i]; i++) {
+        //   addMarker(result);
+        //   var dist = google.maps.geometry.spherical.computeDistanceBetween(obj.geometry.location.lat(result) , crd);
+        //   console.log(dist);
+        // if (dist <= 100){
+          addMarker(result);
+          }
+        }
+
+      function addMarker(place) {
+        var marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location,
+          icon: {
+            url: 'http://maps.gstatic.com/mapfiles/circle.png',
+            anchor: new google.maps.Point(10, 10),
+            scaledSize: new google.maps.Size(10, 17)
+          }
+
+        });
+      
+
+        marker.addListener('click', function() {
+          service.getDetails(place, function(result, status) {
+            if (status !== google.maps.places.PlacesServiceStatus.OK) {
+              console.error(status);
+              return;
+            }
+            infoWindow.setContent(result.name);
+            infoWindow.open(map, marker);
+          });
+        })
+
+      }
+
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2tEZYe153X0mjpEFdgjViaH46lPasUMg&callback=initMap&libraries=places,visualization" async defer></script>
+
+
+
+  </div>
+  <div id="section2" class="container-fluid">
     <h3>Tips for Survivors Seeking Justice</h3>
     	<p>If you choose to report the sexual asault and intend to press charges, there are two types of cases:</p>
     <table style="width:100%">
       <tr>
-        <th>Criminal</th>
-        <th>Civil</th> 
-      </tr>
-      <tr>
-        <td>This is an attempt to prove the attacker is guilty and forces him/her to serve jail time.</td>
-        <td>This is an attempt to win financial compensation. Your lawyer will argue the assaulter should be held accountable for any medical costs or possible psychological and emotional damages.</td> 
-      </tr>
-      <tr>
-        <td>Evidence is needed to begin a trial. In lawyer-speak you need “proof beyond reasonable doubt.” </td>
-        <td>Less proof is needed to begin a court case.</td>
-      </tr>
-      <tr>
-        <td>An attorney from the state ultimately has full control over the case.</td>
-        <td>You will be represented by a private attorney and can make decision s regarding the case.</td>
+        <td><B>CRIMINAL</B><br>This is an attempt to prove the attacker is guilty and forces him/her to serve jail time.<br>To file a court case, concrete evidence is necessary; in other words the evidence must be “proof beyond reasonable doubt.”  <br><br>A state attorney ultimately has full control over the case.</td>
+        <td><B>CIVIL</B><br>This is an attempt to win financial compensation. Your lawyer will argue that the perpetrator should be held accountable for any medical costs.<br>Less proof is needed to begin a civil court case.<br>A private attorney will represent you and can make decisions regarding the case.</td> 
       </tr>
       <tr>
         <td>You will be asked to testify.</td>
         <td>You will be asked to testify.</td>
       </tr>
     </table>
-    <h3>Advice for Survivors who Testify</h3>
+  </div>
+  <div id="section3" class="container-fluid">
+    <h3>Advice for Survivors Who Testify</h3>
       <ul>
-        <li>If you have any concerns or reservations about testifying, speak to your attorney directly./li>
-        <li>In a criminal case, you are protected under the rape shield law which means examiners cannot ask about your prior sexual history./li>
+        <li>If you have any concerns or reservations about testifying, speak to your attorney directly.</li>
+        <li>In a criminal case, you are protected under the rape shield law which means examiners cannot ask about your prior sexual history.</li>
         <li>To avoid getting overwhelmed, remember to take pauses and avoid looking at the defendant.</li>
         <li>Tell the truth and if you misspeak, take a second to fix it.</li>
         <li>Ask for clarification if you ever get confused by the questions.</li>
-        
-    <h3>Helpful Organizations</h3>
+      </ul>
+  </div>
+  <div id="section4" class="container-fluid">
+  <h3>Helpful Organizations</h3>
     <ul>
-      <li><a href = "http://www.woar.org/counseling-and-support/">Women Organized Aginst Rape offers counseling, crisis services, and support to survivors of all ages.</li>
-      <li><a href = "https://www.rainn.org/">RAINN gives survivors advice about life after a sexual assault.</li>
-      <li><a href = "www.nsvrc.org/">The National Sexual Violence Resource Center aims to be a leader in responding to sexual violence.</li>
-      <li><a href = "www.soar99.org/">Speaking Out About Rape is a blog that aims to raise national awareness and inspire survivors with inspirational stories.</li>
-      <li><a href = "www.vday.org/">V Day is a global movement to stop violence against women.</li>
-      <li><a href = "http://www.svfreenyc.org/">The New York City Alliance Against Sexual Assault.</li>
+      <li><a href = "http://www.woar.org/counseling-and-support/">Women Organized Aginst Rape</a> offers counseling, crisis services, and support to survivors of all ages.</li>
+      <li><a href = "https://www.rainn.org/">RAINN</a> gives survivors advice about life after a sexual assault.</li>
+      <li><a href = "www.nsvrc.org/">The National Sexual Violence Resource Center</a> aims to be a leader in responding to sexual violence.</li>
+      <li><a href = "www.soar99.org/">Speaking Out About Rape</a> is a blog that aims to raise national awareness and inspire survivors with inspirational stories.</li>
+      <li><a href = "www.vday.org/">V Day</a> is a global movement to stop violence against women.</li>
+      <li><a href = "http://www.svfreenyc.org/">The New York City Alliance Against Sexual Assault.</a></li>
     </ul>
+  </div>
   </body>
+    <div class=footer>
+      <br style="display: block; margin: 10px 0;line-height:20px;"><a href="https://instagram.com/the_35_percent"><i class="fa fa-instagram" style="font-size:25px;color:white;text-align:left;"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <p style="color:white;font-size:20px;vertical-align:middle;display:inline-block;line-height: normal;letter-spacing: 4px;">#RaiseThe35</p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="https://facebook.com/the35percent"><i class="fa fa-facebook" style="font-size:22px;color:white;text-align:left;"></i></a>
+    </div>
 </html>

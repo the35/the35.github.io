@@ -10,6 +10,9 @@ router.get('/resources', function(req, res, next) {
   res.render('rpage.hbs');
 });
 router.get('/ourbeautifulmap', function(req, res, next) {
+  res.render('UGHH.hbs');
+});
+router.get('/map', function(req, res, next) {
   res.render('AHH.hbs');
 });
 router.get('/chat', function(req, res, next) {

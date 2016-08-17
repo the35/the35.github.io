@@ -2,12 +2,16 @@
 <html>
   <head>
     <title>The 35%</title>
-            <meta charset="utf-8">
+        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+        <script type="text/javascript" src="/public/javascripts/countup.js"></script>
         <link rel="stylesheet" href="style">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="https://cdn.rawgit.com/inorganik/countUp.js/master/countUp.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -18,20 +22,28 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/">The 35%</a>
+      <a class="navbar-brand" href="/">The <span class="count">35</span>%</a>
     </div>
     <div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
+<!--           <li><a href="/">Home</a></li> -->
           <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="">About<span class="caret"></span></a>
           <ul class="dropdown-menu">   
-            <li><a href="/#section1">Statistics</a></li>
-            <li><a href="/#section2">Mission</a></li>
-            <li><a href="/#section3">Myths Debunked</a></li>
-            <li><a href="/#section4">About Us</a></li>
+            <li><a href="/#section1"target="_parent">Statistics</a></li>
+            <li><a href="/#section2"target="_parent">Mission</a></li>
+            <li><a href="/#section3"target="_parent">Myths Debunked</a></li>
+            <li><a href="/#section4"target="_parent">About Us</a></li>
           </ul>
-          <li><a href="chat">Chat</a></li>
-          <li><a href="resources">Resources</a></li>
+          <li><a href="/chat" target="_parent">Chat</a></li>
+<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="resources">Resources<span class="caret"></span></a>
+          <ul class="dropdown-menu">   
+            <li><a href="/resources/#section5"target="_parent">Immediate Steps</a></li>
+            <li><a href="/resources/#section1"target="_parent">Map</a></li>
+            <li><a href="/resources/#section2"target="_parent">Tips for Survivors Seeking Justice</a></li>
+            <li><a href="/resources/#section3"target="_parent">Advice for Survivors Who Testify</a></li>
+            <li><a href="/resources/#section4"target="_parent">Helpful Organizations</a></li>
+          </ul>
           </li>
         </ul>
       </div>
@@ -39,7 +51,7 @@
   </div>
 </nav>
 
-    <body data-spy="scroll" data-target=".navbar" data-offset="50"> <br><br><Br>
+    <body data-spy="scroll" data-target=".navbar" data-offset="5s0"> <br>
     {{{body}}}
   </body>
 </html>
